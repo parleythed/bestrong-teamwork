@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0.0"
+description: "A Helm chart for Kubernetes Blue/Green Deployment"
+name: blue-green
+version: 0.1.0

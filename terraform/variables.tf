@@ -27,9 +27,22 @@ variable "node_count" {
 variable "ssh_username" {
   description = "Admin username for Linux nodes"
   type        = string
+  default     = "azureadmin"
+}
+variable "ssh_key_name" {
+  description = "Name for the SSH key."
+  type        = string
+  default     = "bestrong-ssh-key"
 }
 
-variable "ssh_public_key" {
-  description = "SSH public key for accessing the AKS nodes"
+variable "storage_account_name" {
+  description = "The name of the storage account"
   type        = string
+  default     = "bestrongaksstorage1"
+}
+
+variable "container_name" {
+  description = "The name of the storage container"
+  type        = string
+  default     = "tfstate"
 }

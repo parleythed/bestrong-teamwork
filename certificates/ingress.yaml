@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bestrong-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+spec:
+  ingressClassName: nginx  # Replaces the deprecated annotation
+  rules:
+  - host: "bestandstrong.pp.ua"
+    http:
+      paths:
+      - path: /swagger/index.html
+        pathType: Prefix
+        backend:
+          service:
+            name: bestrong-api
+            port:
+              number: 80        
+  tls:
+  - hosts:
+    - "bestandstrong.pp.ua"
+    secretName: bestrong-api-tls-1

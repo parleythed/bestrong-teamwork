@@ -1,29 +1,35 @@
-variable "resource_group_name" {
+variable "rg_name" {
+  description = "Resource group name"
   type        = string
-  default     = "bestrong-aks"
-  description = "Name of the resource group."
 }
 
-variable "resource_group_location" {
+variable "rg_location" {
+  description = "Azure region for the resource group"
   type        = string
-  default     = "canadacentral"
-  description = "Location of the resource group."
+}
+
+variable "vnet_name" {
+  description = "Virtual network name"
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "Subnet name"
+  type        = string
 }
 
 variable "node_count" {
+  description = "Number of nodes in the AKS cluster"
   type        = number
-  description = "The initial quantity of nodes for the node pool."
   default     = 2
 }
 
-variable "username" {
+variable "ssh_username" {
+  description = "Admin username for Linux nodes"
   type        = string
-  description = "The admin username for the new cluster."
-  default     = "azureadmin"
 }
 
-variable "ssh_key_name" {
-  description = "Name for the SSH key."
+variable "ssh_public_key" {
+  description = "SSH public key for accessing the AKS nodes"
   type        = string
-  default     = "bestrong-ssh-key"
 }

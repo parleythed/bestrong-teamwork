@@ -7,11 +7,9 @@ module "resource_group" {
 
 # Storage Account Module
 module "storage_account" {
-  source              = "./modules/storage_account"
-  resource_group_name = var.rg_name
-  location            = var.rg_location
-  # storage_account_name = var.storage_account_name
-  # container_name       = var.container_name
+  source               = "./modules/storage_account"
+  resource_group_name  = var.rg_name
+  location             = var.rg_location
   storage_account_name = var.storage_account_name
   container_name       = var.container_name
 }
@@ -24,6 +22,7 @@ module "vnet" {
   resource_group_name     = module.resource_group.rg_name
   resource_group_location = module.resource_group.rg_location
   azurerm_subnet_name     = var.subnet_name
+
 }
 
 # AKS Cluster Module

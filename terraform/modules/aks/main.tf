@@ -12,9 +12,9 @@ terraform {
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
-  location            = var.resource_group_location
+  location            = azurerm_resource_group.rg.location
   name                = "bestrong-aks-cluster" 
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "bestrong-aks-dns"
 
   identity {

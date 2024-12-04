@@ -1,13 +1,11 @@
 variable "rg_name" {
   description = "Resource group name"
   type        = string
-  default     = "bestrong-aks"
 }
 
 variable "rg_location" {
   description = "Azure region for the resource group"
   type        = string
-  default     = "canadacentral"
 }
 
 variable "vnet_name" {

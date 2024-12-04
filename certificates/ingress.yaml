@@ -3,22 +3,35 @@ kind: Ingress
 metadata:
   name: bestrong-ingress
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+    traefik.ingress.kubernetes.io/router.middlewares: nginx1-redirecttohttps@kubernetescrd
+
+    #  cert-manager.io/cluster-issuer: letsencrypt
+    #  nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+    #  nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx  # Replaces the deprecated annotation
   rules:
   - host: "bestandstrong.pp.ua"
-    http:
+    http:  # - http works, should comment line above
       paths:
-      - path: /swagger/index.html
-        pathType: Prefix
+      - path: / #(.*)
+        pathType: Prefix #ImplementationSpecific
         backend:
           service:
             name: bestrong-api
             port:
-              number: 80        
+              number: 80    
   tls:
   - hosts:
-    - "bestandstrong.pp.ua"
-    secretName: bestrong-api-tls-1
+    - bestandstrong.pp.ua
+    secretName: nginx1-tls-secret
+      
+#   # tls:
+#   # - hosts:
+#   #   - "bestandstrong.pp.ua"
+#   #   secretName: bestrong-api-tls
+
+
+# Application gateway

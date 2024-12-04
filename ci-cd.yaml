@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  - group: AzureCredentials 
+
+stages:
+  - stage: BuildHelmChart
+    displayName: Build and Push Helm Chart
+    jobs:
+      - job: HelmPackage
+        displayName: Package and Push Helm Chart
+        steps:
+          - task: HelmInstaller@1
+            inputs:
+              helmVersion: 'latest'
+
+          - checkout: self
+
+          - script: |
+              helm package $(HELM_CHART_NAME)
+              helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
+            displayName: Package and Push Helm Chart
+
+  - stage: DeployToAKS
+    displayName: Deploy to AKS
+    dependsOn: BuildHelmChart
+    jobs:
+      - job: DeployHelm
+        displayName: Deploy Helm Chart to AKS
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                # Authenticate to AKS
+                az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
+
+                # Add the ACR Helm repository
+                helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm
+                helm repo update
+
+                # Deploy the Helm chart
+                helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \
+                  --version <version> \
+                  --set ingress.host=$(DOMAIN)

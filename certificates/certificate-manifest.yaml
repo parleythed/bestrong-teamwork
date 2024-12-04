@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: letsencrypt-certificate
+spec:
+  secretName: letsencrypt-secret
+  dnsNames:
+  - bestandstrong.pp.ua
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  usages:
+  - digital signature
+  - key encipherment

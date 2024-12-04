@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-csp-headers
+  namespace: default  # Use the same namespace as your Ingress
+data:
+  Content-Security-Policy: "script-src 'self' 'unsafe-eval'; object-src 'none';"

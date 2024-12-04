@@ -2,36 +2,29 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: bestrong-ingress
+  namespace: ingress-nginx
   annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
-    traefik.ingress.kubernetes.io/router.middlewares: nginx1-redirecttohttps@kubernetescrd
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+    # kubernetes.io/ingress.class: traefik
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+    # nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
 
-    #  cert-manager.io/cluster-issuer: letsencrypt
-    #  nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
-    #  nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  ingressClassName: nginx  # Replaces the deprecated annotation
+  ingressClassName: nginx  
   rules:
-  - host: "bestandstrong.pp.ua"
-    http:  # - http works, should comment line above
+  - host: bestrong.canadacentral.cloudapp.azure.com
+    http: 
       paths:
-      - path: / #(.*)
+      - path: /swagger/index.html(/|$)(.*)
         pathType: Prefix #ImplementationSpecific
         backend:
           service:
-            name: bestrong-api
+            name: bestrong-api1
             port:
               number: 80    
   tls:
   - hosts:
-    - bestandstrong.pp.ua
-    secretName: nginx1-tls-secret
-      
-#   # tls:
-#   # - hosts:
-#   #   - "bestandstrong.pp.ua"
-#   #   secretName: bestrong-api-tls
+    - bestrong.canadacentral.cloudapp.azure.com
+    secretName: ingress-nginx-tls-secret
 
-
-# Application gateway

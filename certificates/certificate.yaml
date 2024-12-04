@@ -1,11 +1,33 @@
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: selfsigned-ssa
+# spec:
+#   secretName: nginx-tls-secret
+#   issuerRef:
+#     name: selfsigned-issuer
+#     kind: ClusterIssuer
+#   ipAddresses:
+#     - 4.172.34.62
+
+
+# selfsigned-certificate.yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: nginx1-cert
+  name: ingress-nginx-tls
+  namespace: ingress-nginx # Change to the namespace of your ingress-nginx controller
 spec:
-  secretName: nginx1-tls-secret
+  secretName: ingress-nginx-tls-secret
   issuerRef:
-    name: nginx1-clusterissuer
+    name: selfsigned-cluster-issuer
     kind: ClusterIssuer
+  commonName: "4.172.34.62"
   dnsNames:
-    - bestandstrong.pp.ua
+    - "4.172.34.62"
+  ipAddresses:
+    - "4.172.34.62"
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth

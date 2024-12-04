@@ -1,18 +1,17 @@
 image:
-  repository: <your-docker-image-repo>
+  repository: steeve05/bestr
   pullPolicy: IfNotPresent
   tag: latest
 
 service:
   type: LoadBalancer
   port: 80
-  targetPort: 5001
+  targetPort: 80
 
 ingress:
   enabled: true
-  host: bestrong.example.com
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    certManagerIssuer: "selfsigned-issuer"
 
 resources:
   requests:

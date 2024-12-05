@@ -1,30 +1,62 @@
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: bestrong-ingress
+#   namespace: ingress-nginx
+#   annotations:
+#     cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+#     # kubernetes.io/ingress.class: traefik
+#     nginx.ingress.kubernetes.io/use-regex: "true"
+#     nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+#     # nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
+
+# spec:
+#   ingressClassName: nginx  
+#   rules:
+#   - host: bestrong.canadacentral.cloudapp.azure.com
+#     http: 
+#       paths:
+#       - path: /
+#         pathType: Prefix #ImplementationSpecific
+#         backend:
+#           service:
+#             name: bestrong-api1
+#             port:
+#               number: 80    
+#   tls:
+#   - hosts:
+#     - bestrong.canadacentral.cloudapp.azure.com
+#     secretName: ingress-nginx-tls-secret
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: bestrong-ingress
-  namespace: ingress-nginx
+  name: default-ingress
+
   annotations:
-    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
-    # kubernetes.io/ingress.class: traefik
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
-    # nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
 
 spec:
-  ingressClassName: nginx  
+  ingressClassName: nginx
+  tls:
+    - hosts: 
+      - bestandstrong.pp.ua
+      secretName: userapi-tls
   rules:
-  - host: bestrong.canadacentral.cloudapp.azure.com
+  - host: bestandstrong.pp.ua
     http: 
       paths:
-      - path: /swagger/index.html(/|$)(.*)
-        pathType: Prefix #ImplementationSpecific
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: bestrong-api1
             port:
               number: 80    
-  tls:
-  - hosts:
-    - bestrong.canadacentral.cloudapp.azure.com
-    secretName: ingress-nginx-tls-secret
+
+
+
+
+
 

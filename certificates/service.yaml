@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bestrong-api1
+  labels:
+    serv: bestrongsvc
 spec:
   selector:
     app: bestrong-api1

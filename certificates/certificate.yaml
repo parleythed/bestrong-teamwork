@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ingress-nginx-tls
-  # namespace: test-ns
+  namespace: public-ingress
 
 spec:
   secretName: userapi-tls

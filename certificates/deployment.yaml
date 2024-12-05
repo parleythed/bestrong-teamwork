@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bestrong-api1
-  # namespace: test-ns
+  namespace: public-ingress
 
 spec:
   replicas: 2

@@ -15,7 +15,7 @@ spec:
         app: bestrong-api1
     spec:
       containers:
-      - name: bestrong-api1
+      - name: bestrong-api
         image: steeve05/bestr:latest # Replace with your image
         imagePullPolicy: Always
         ports:

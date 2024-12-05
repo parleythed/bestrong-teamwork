@@ -5,16 +5,16 @@ metadata:
   namespace: bestrong-ingress
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
-    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+    nginx.ingress.kubernetes.io/proxy-set-headers: ingress-nginx-csp-headers  # Reference the CSP headers config map
+    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
 spec:
   ingressClassName: nginx
-  # tls:
-  #   - hosts: 
-  #     - bestandstrong.pp.ua
-  #     secretName: userapi-tls
+  tls:
+    - hosts: 
+      - bestrong-api.pp.ua
+      secretName: userapi-tls
   rules:
-  - host: bestandstrong.pp.ua
+  - host: bestrong-api.pp.ua
     http: 
       paths:
       - path: /

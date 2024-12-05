@@ -2,8 +2,7 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: ingress-nginx-tls
-  namespace: bestrong-ingress
+  name: ingress-nginx-tls1
 
 spec:
   secretName: userapi-tls
@@ -11,7 +10,7 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - bestandstrong.pp.ua
+    - bestrong-api.pp.ua
   usages:
     - digital signature
     - key encipherment

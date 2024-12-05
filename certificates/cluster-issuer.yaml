@@ -2,15 +2,14 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
-  namespace: bestrong-ingress
 
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: snigur102030@gmail.com
+    email: stephansnigur@gmail.com
     privateKeySecretRef:
-      name: letsencrypt-prod-issuer-key
+      name: letsencrypt-prod-issuer-key1
     solvers:
       - http01:
           ingress:
-            class: public
+            class: nginx

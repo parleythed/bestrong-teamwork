@@ -1,11 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bestrong-api1
-  namespace: public-ingress
-
-  labels:
-    serv: bestrongsvc
+  name: bestrong-api-svc
+  namespace: bestrong-ingress
 spec:
   selector:
     app: bestrong-api1

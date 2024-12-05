@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bestrong-api1
-  namespace: public-ingress
+  namespace: bestrong-ingress
 
 spec:
   replicas: 2
@@ -15,7 +15,7 @@ spec:
         app: bestrong-api1
     spec:
       containers:
-      - name: bestrong-api
+      - name: bestrong-api1
         image: steeve05/bestr:latest # Replace with your image
         imagePullPolicy: Always
         ports:

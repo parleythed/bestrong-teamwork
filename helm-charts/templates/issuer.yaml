@@ -1,6 +1,17 @@
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
-  name: selfsigned-issuer
+  name: {{ .Values.certManager.clusterIssuer.name }}
+  namespace: {{ .Values.certManager.clusterIssuer.namespace }}
 spec:
-  selfSigned: {}
+  acme:
+    server: {{ .Values.certManager.clusterIssuer.acme.server }}
+    email: {{ .Values.certManager.clusterIssuer.acme.email }}
+    privateKeySecretRef:
+      name: {{ .Values.certManager.clusterIssuer.acme.privateKeySecretRefName }}
+    solvers:
+    {{- range .Values.certManager.clusterIssuer.acme.solvers }}
+      - http01:
+          ingress:
+            class: {{ .http01.ingressClass }}
+    {{- end }}

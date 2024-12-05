@@ -1,11 +1,18 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-tls
+  name: {{ .Values.certManager.certificate.name }}
+  namespace: {{ .Values.certManager.certificate.namespace }}
 spec:
-  secretName: {{ .Release.Name }}-tls
+  secretName: {{ .Values.certManager.certificate.secretName }}
   issuerRef:
-    name: {{ .Values.ingress.annotations.certManagerIssuer }}
-    kind: Issuer
-  dnsNames: 
-    - localhost
+    name: {{ .Values.certManager.certificate.issuerRef.name }}
+    kind: {{ .Values.certManager.certificate.issuerRef.kind }}
+  dnsNames:
+  {{- range .Values.certManager.certificate.dnsNames }}
+    - {{ . }}
+  {{- end }}
+  usages:
+  {{- range .Values.certManager.certificate.usages }}
+    - {{ . }}
+  {{- end }}

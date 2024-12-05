@@ -4,14 +4,40 @@ image:
   tag: latest
 
 service:
-  type: LoadBalancer
-  port: 80
-  targetPort: 80
+  name: bestrong-api-svc
+  namespace: bestrong-ingress
+  selector:
+    app: bestrong-api1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
 
 ingress:
-  enabled: true
+  name: default-ingress
+  namespace: bestrong-ingress
+  ingressClassName: nginx
   annotations:
-    certManagerIssuer: "selfsigned-issuer"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"
+    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+  tls:
+    enabled: false
+    hosts:
+      - bestandstrong.pp.ua
+    secretName: userapi-tls
+  rules:
+    - host: bestandstrong.pp.ua
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: bestrong-api-svc
+              servicePort: 80
+
 
 resources:
   requests:
@@ -25,3 +51,31 @@ blueGreen:
   activeColor: blue
 
 replicaCount: 2
+
+certManager:
+  clusterIssuer:
+    name: letsencrypt-prod
+    namespace: bestrong-ingress
+    acme:
+      server: https://acme-v02.api.letsencrypt.org/directory
+      email: snigur102030@gmail.com
+      privateKeySecretRefName: letsencrypt-prod-issuer-key
+      solvers:
+        - http01:
+            ingressClass: public
+
+
+certManager:
+  certificate:
+    name: ingress-nginx-tls
+    namespace: bestrong-ingress
+    secretName: userapi-tls
+    issuerRef:
+      name: letsencrypt-prod
+      kind: ClusterIssuer
+    dnsNames:
+      - bestandstrong.pp.ua
+    usages:
+      - digital signature
+      - key encipherment
+      - server auth

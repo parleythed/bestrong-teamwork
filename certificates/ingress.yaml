@@ -2,16 +2,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: default-ingress
-  namespace: public-ingress
+  namespace: bestrong-ingress
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    # nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
+    nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"  # Reference the CSP headers config map
+    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts: 
-      - bestandstrong.pp.ua
-      secretName: userapi-tls
+  # tls:
+  #   - hosts: 
+  #     - bestandstrong.pp.ua
+  #     secretName: userapi-tls
   rules:
   - host: bestandstrong.pp.ua
     http: 
@@ -20,7 +21,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: bestrong-api1
+            name: bestrong-api-svc
             port:
               number: 80    
 

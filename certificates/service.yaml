@@ -5,7 +5,8 @@ metadata:
   namespace: bestrong-ingress
 spec:
   selector:
-    app: bestrong-api1
+    app: blue-green-dep
+    color: blue
   ports:
   - protocol: TCP
     port: 80

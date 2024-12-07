@@ -12,7 +12,7 @@ variables:
   - group: AllCredentials
 
 stages:
-  - stage: BuildAndValidate
+  - stage: Build
     displayName: Build and Validate
     jobs:
       - job: HelmPackageAndTerraformValidate
@@ -65,7 +65,7 @@ stages:
                 helm package .
                 helm lint
 
-  - stage: BuildAndPushArtifacts
+  - stage: BuildAndPush
     displayName: Build and Push Artifacts
     jobs:
       - job: HelmChartAndContainerBuild
@@ -91,11 +91,11 @@ stages:
                 helm package .
                 helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
 
-  - stage: DeployToProduction
+  - stage: Deploy
     displayName: Deploy to Production
     dependsOn: 
-      - BuildAndValidate
-      - BuildAndPushArtifacts
+      - Build
+      - BuildAndPush
     condition: succeeded()
     jobs:
       - deployment: DeployToAKS

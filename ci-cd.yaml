@@ -120,7 +120,7 @@ stages:
 
                       az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
                       
-                      helm repo add myrepo oci://bestrongacr45.azurecr.io/helm/blue-green:0.1.0
+                      helm repo add myrepo bestrongacr45.azurecr.io/helm/blue-green:0.1.0
                       helm repo update
                       
                       helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \

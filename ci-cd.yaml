@@ -126,9 +126,3 @@ stages:
 
                       echo "Pulling Helm chart..."
                       helm pull oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
-
-                      echo "Installing or Upgrading Helm release..."
-                      helm upgrade --install myapp ./blue-green-0.1.0.tgz \
-                        --namespace $(NAMESPACE) \
-                        --set ingress.host=$(DOMAIN) \
-                        --set replicaCount=2

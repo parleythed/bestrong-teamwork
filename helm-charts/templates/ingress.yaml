@@ -1,58 +1,25 @@
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: {{ .Release.Name }}-ingress
-#   annotations:
-#     cert-manager.io/issuer: {{ .Values.ingress.annotations.certManagerIssuer }}
-# spec:
-#   ingressClassName: nginx
-#   tls:
-#     - secretName: {{ .Release.Name }}-tls
-#       hosts: 
-#         - localhost
-#   rules:
-#     - host: localhost
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: {{ .Release.Name }}-service
-#                 port:
-#                   number: {{ .Values.service.port }}
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.ingress.name }}
   namespace: {{ .Values.ingress.namespace }}
   annotations:
-  {{- range $key, $value := .Values.ingress.annotations }}
-    {{ $key }}: "{{ $value }}"
-  {{- end }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.annotations.certManager }}
+    nginx.ingress.kubernetes.io/proxy-set-headers: {{ .Values.ingress.annotations.proxySetHeaders }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
-  {{- if .Values.ingress.tls.enabled }}
-  tls:
-  - hosts:
-    {{- range .Values.ingress.tls.hosts }}
-      - {{ . }}
-    {{- end }}
-    secretName: {{ .Values.ingress.tls.secretName }}
-  {{- end }}
+  tls: 
+    - hosts: 
+        - {{ .Values.ingress.tls.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}    
   rules:
-  {{- range .Values.ingress.rules }}
-    - host: {{ .host }}
+    - host: {{ .Values.ingress.rules.host }}
       http:
         paths:
-        {{- range .http.paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+          - path: {{ Values.ingress.rules.path }}
+            pathType: {{ .Values.ingress.rules.pathType }}
             backend:
               service:
-                name: {{ .backend.serviceName }}
+                name: {{ .Values.ingress.rules.serviceName }}
                 port:
-                  number: {{ .backend.servicePort }}
-        {{- end }}
-  {{- end }}
+                  number: {{ .Values.ingress.rules.service.port}}

@@ -17,12 +17,11 @@ spec:
         color: blue
     spec:
       containers:
-      - name: bestrong-api-blue
-        image: steeve05/bestr:blue # Replace with your image
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Development"
-        
+        - name: bestrong-api-blue
+          image: steeve05/bestr:blue # Replace with your image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"

@@ -1,81 +1,86 @@
-image:
-  repository: steeve05/bestr
-  pullPolicy: IfNotPresent
-  tag: latest
-
 service:
   name: bestrong-api-svc
   namespace: bestrong-ingress
   selector:
-    app: bestrong-api1
+    app: blue-green-dep
+    color: blue
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
   type: ClusterIP
 
-
 ingress:
   name: default-ingress
   namespace: bestrong-ingress
-  ingressClassName: nginx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/proxy-set-headers: "ingress-nginx-csp-headers"
-    nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+    certManager: letsencrypt-prod
+    proxySetHeaders: ingress-nginx-csp-headers
+    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+  ingressClassName: nginx
   tls:
-    enabled: false
-    hosts:
-      - bestandstrong.pp.ua
+    host: bestrong-api.pp.ua
     secretName: userapi-tls
   rules:
-    - host: bestandstrong.pp.ua
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              serviceName: bestrong-api-svc
-              servicePort: 80
+    host: bestrong-api.pp.ua
+    path: /
+    pathType: Prefix
+    service:
+      name: bestrong-api-svc
+      port: 80
 
+deployments:
+  - name: blue-dep
+    namespace: bestrong-ingress
+    replicas: 2
+    labels:
+      app: blue-green-dep
+      color: blue
+    container:
+      name: bestrong-api-blue
+      image: steeve05/bestr:blue
+      imagePullPolicy: Always
+      port: 80
+      environment: "Development"
+  - name: green-dep
+    namespace: bestrong-ingress
+    replicas: 2
+    labels:
+      app: blue-green-dep
+      color: green
+    container:
+      name: bestrong-api-green
+      image: steeve05/bestr:green
+      imagePullPolicy: Always
+      port: 80
+      environment: "Development"
 
-resources:
-  requests:
-    cpu: "250m"
-    memory: "64Mi"
-  limits:
-    cpu: "500m"
-    memory: "128Mi"
+clusterIssuer:
+  name: letsencrypt-prod
+  namespace: bestrong-ingress
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: stephansnigur@gmail.com
+    privateKeySecretName: letsencrypt-prod-issuer-key1
+    solver:
+      ingressClass: public
 
-blueGreen:
-  activeColor: blue
-
-replicaCount: 2
-
-certManager:
-  clusterIssuer:
+certificate:
+  name: ingress-nginx-tls1
+  namespace: bestrong-ingress
+  secretName: userapi-tls
+  issuerRef:
     name: letsencrypt-prod
-    namespace: bestrong-ingress
-    acme:
-      server: https://acme-v02.api.letsencrypt.org/directory
-      email: snigur102030@gmail.com
-      privateKeySecretRefName: letsencrypt-prod-issuer-key
-      solvers:
-        - http01:
-            ingressClass: public
+    kind: ClusterIssuer
+  dnsNames:
+    - bestrong-api.pp.ua
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
 
-
-certManager:
-  certificate:
-    name: ingress-nginx-tls
-    namespace: bestrong-ingress
-    secretName: userapi-tls
-    issuerRef:
-      name: letsencrypt-prod
-      kind: ClusterIssuer
-    dnsNames:
-      - bestandstrong.pp.ua
-    usages:
-      - digital signature
-      - key encipherment
-      - server auth
+cspConfigMap:
+  name: ingress-nginx-csp-headers
+  namespace: bestrong-ingress
+  data:
+    ContentSecurityPolicy: "script-src 'self' 'unsafe-eval'; object-src 'none';"

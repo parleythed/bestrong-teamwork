@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.cspConfigMap.name }}
+  namespace: {{ .Values.cspConfigMap.namespace }}
+data:
+  Content-Security-Policy: "{{ .Values.cspConfigMap.data.ContentSecurityPolicy }}"

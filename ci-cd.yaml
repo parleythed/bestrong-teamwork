@@ -19,9 +19,16 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: TerraformInstaller@0
+          - task: Bash@3
+            displayName: "Install Terraform"
             inputs:
-              terraformVersion: '1.9.8'
+              targetType: 'inline'
+              script: |
+                TERRAFORM_VERSION="1.9.8"
+                wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+                unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+                sudo mv terraform /usr/local/bin/
+                terraform version
 
           - task: HelmInstaller@1
             inputs:

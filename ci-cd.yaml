@@ -131,4 +131,4 @@ stages:
                     helm pull oci://bestrongacr45.azurecr.io/helm/blue-green:0.1.0 -d ./helm-charts
 
                     echo "Installing Helm chart..."
-                    helm install $(RELEASE_NAME) ./charts/blue-green-0.1.0.tgz --namespace $(K8S_NAMESPACE) --create-namespace
+                    helm install $(RELEASE_NAME) ./helm-charts/blue-green-0.1.0.tgz --namespace $(K8S_NAMESPACE) --create-namespace

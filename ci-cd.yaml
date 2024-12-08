@@ -43,17 +43,11 @@ stages:
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
                 az account show
 
-          - task: Bash@3
-            displayName: Terraform Validate
+          - task: TerraformTaskV4@4
             inputs:
-              targetType: 'inline'
-              script: |
-                set -e
-                cd ./terraform
-                terraform init -backend=true
-                terraform validate
-                terraform fmt -check
-
+              provider: 'azurerm'
+              command: 'validate'
+              
           - task: Bash@3
             displayName: Package Helm Chart
             inputs:

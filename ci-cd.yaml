@@ -54,7 +54,7 @@ stages:
               targetType: 'inline'
               script: |
                 set -e
-                cd helm  # Adjust path to your Helm chart directory
+                cd ./helm-charts
                 helm lint
                 helm package .
 

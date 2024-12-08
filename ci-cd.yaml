@@ -132,4 +132,4 @@ stages:
                       helm repo add bestrongacr45 oci://bestrongacr45.azurecr.io/helm/blue-green
 
                       # helm upgrade --install my-release oci://bestrongacr45.azurecr.io/helm/blue-green/blue-green  --version 0.1.0
-                      helm install bestrongacr45/helm/blue-green oci://bestrongacr45.azurecr.io/helm/blue-green/blue-green --version 0.1.0
+                      helm install bestrongacr45/helm/blue-green oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0

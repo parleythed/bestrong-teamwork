@@ -16,97 +16,102 @@ stages:
     displayName: Build and Validate
     jobs:
       - job: HelmPackageAndTerraformValidate
+        displayName: Helm Packaging and Terraform Validation
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: Bash@3
-            displayName: "Install Terraform"
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
             inputs:
-              targetType: 'inline'
-              script: |
-                TERRAFORM_VERSION="1.9.8"
-                wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-                unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-                sudo mv terraform /usr/local/bin/
-                terraform version
+              terraformVersion: '1.9.8'
 
           - task: HelmInstaller@1
+            displayName: Install Helm
             inputs:
               helmVersion: 'latest'
 
           - task: AzureCLI@2
-            displayName: "Azure CLI Version"
+            displayName: Display Azure CLI Version
             inputs:
               azureSubscription: '$(ARM_SERVICE_CONNECTION)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                set -e
                 az version
                 az account show
 
           - task: AzureCLI@2
-            displayName: "Azure Login"
+            displayName: Azure Login
             inputs:
               azureSubscription: '$(ARM_SERVICE_CONNECTION)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                set -e
                 az account show
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
 
           - task: Bash@3
-            displayName: "Terraform Validate"
+            displayName: Terraform Validate
             inputs:
               targetType: 'inline'
               script: |
+                set -e
                 cd ./terraform
                 terraform init -backend=true
                 terraform validate
                 terraform fmt -check
 
           - task: Bash@3
-            displayName: "Package Helm Chart"
+            displayName: Package Helm Chart
             inputs:
               targetType: 'inline'
               script: |
+                set -e
                 cd helm  # Adjust path to your Helm chart directory
-                helm package .
                 helm lint
+                helm package .
 
   - stage: BuildAndPush
     displayName: Build and Push Artifacts
     jobs:
       - job: HelmChartAndContainerBuild
+        displayName: Build Helm Chart and Push to ACR
         pool:
           vmImage: 'ubuntu-latest'
         steps:
           - task: AzureCLI@2
-            displayName: "Azure Login"
+            displayName: Azure Login
             inputs:
               azureSubscription: '$(ARM_SERVICE_CONNECTION)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                set -e
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
                 az acr login -n $(ACR_NAME)
 
           - task: Bash@3
-            displayName: "Helm Chart Push to ACR"
+            displayName: Push Helm Chart to ACR
             inputs:
               targetType: 'inline'
               script: |
+                set -e
                 cd ./helm-charts
+                helm lint
                 helm package .
                 helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
 
   - stage: DeployToProduction
     displayName: Deploy to Production
-    dependsOn: 
+    dependsOn:
       - Build
       - BuildAndPush
     condition: succeeded()
     jobs:
       - deployment: DeployToAKS
+        displayName: Deploy to AKS
         pool:
           vmImage: 'ubuntu-latest'
         environment: 'Production'
@@ -115,16 +120,15 @@ stages:
             deploy:
               steps:
                 - task: AzureCLI@2
-                  displayName: "Azure Login and AKS Deploy"
+                  displayName: Azure Login and AKS Deployment
                   inputs:
                     azureSubscription: '$(ARM_SERVICE_CONNECTION)'
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
-                      # Authenticate to AKS
+                      set -e
                       az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
-
-                      # Deploy Helm Chart
+                      
                       helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm
                       helm repo update
                       

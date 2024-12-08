@@ -19,22 +19,23 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: Bash@3
-            displayName: "Install Tools"
+          - task: TerraformInstaller@0
             inputs:
-              targetType: 'inline'
-              script: |
-                # Install Azure CLI
-                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                
-                # Install Terraform
-                TERRAFORM_VERSION="1.9.8"
-                wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-                unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-                sudo mv terraform /usr/local/bin/
-                
-                # Install Helm
-                curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+              terraformVersion: '1.9.8'
+
+          - task: HelmInstaller@1
+            inputs:
+              helmVersion: 'latest'
+
+          - task: AzureCLI@2
+            displayName: "Azure CLI Version"
+            inputs:
+              azureSubscription: '$(ARM_SERVICE_CONNECTION)'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az version
+                az account show
 
           - task: AzureCLI@2
             displayName: "Azure Login"
@@ -91,11 +92,11 @@ stages:
                 helm package .
                 helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
 
-  - stage: Deploy
+  - stage: DeployToProduction
     displayName: Deploy to Production
     dependsOn: 
-      - Build
-      - BuildAndPush
+      - BuildAndValidate
+      - BuildAndPushArtifacts
     condition: succeeded()
     jobs:
       - deployment: DeployToAKS

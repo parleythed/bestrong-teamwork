@@ -1,0 +1,86 @@
+service:
+  name: bestrong-api-svc
+  namespace: bestrong-ingress
+  selector:
+    app: blue-green-dep
+    color: blue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+ingress:
+  name: default-ingress
+  namespace: bestrong-ingress
+  annotations:
+    certManager: letsencrypt-prod
+    proxySetHeaders: ingress-nginx-csp-headers
+    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
+  ingressClassName: nginx
+  tls:
+    host: bestrong-api.pp.ua
+    secretName: userapi-tls
+  rules:
+    host: bestrong-api.pp.ua
+    path: /
+    pathType: Prefix
+    service:
+      name: bestrong-api-svc
+      port: 80
+
+deployments:
+  - name: blue-dep
+    namespace: bestrong-ingress
+    replicas: 2
+    labels:
+      app: blue-green-dep
+      color: blue
+    container:
+      name: bestrong-api-blue
+      image: steeve05/bestr:blue
+      imagePullPolicy: Always
+      port: 80
+      environment: "Development"
+  - name: green-dep
+    namespace: bestrong-ingress
+    replicas: 2
+    labels:
+      app: blue-green-dep
+      color: green
+    container:
+      name: bestrong-api-green
+      image: steeve05/bestr:green
+      imagePullPolicy: Always
+      port: 80
+      environment: "Development"
+
+clusterIssuer:
+  name: letsencrypt-prod
+  namespace: bestrong-ingress
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: stephansnigur@gmail.com
+    privateKeySecretName: letsencrypt-prod-issuer-key1
+    solver:
+      ingressClass: public
+
+certificate:
+  name: ingress-nginx-tls1
+  namespace: bestrong-ingress
+  secretName: userapi-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - bestrong-api.pp.ua
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+
+cspConfigMap:
+  name: ingress-nginx-csp-headers
+  namespace: bestrong-ingress
+  data:
+    ContentSecurityPolicy: "script-src 'self' 'unsafe-eval'; object-src 'none';"

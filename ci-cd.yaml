@@ -31,17 +31,6 @@ stages:
               helmVersion: 'latest'
 
           - task: AzureCLI@2
-            displayName: Display Azure CLI Version
-            inputs:
-              azureSubscription: '$(ARM_SERVICE_CONNECTION)'
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                set -e
-                az version
-                az account show
-
-          - task: AzureCLI@2
             displayName: Azure Login
             inputs:
               azureSubscription: '$(ARM_SERVICE_CONNECTION)'
@@ -49,8 +38,10 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 set -e
-                az account show
+                echo "Logging in to Azure..."
+                az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
+                az account show
 
           - task: Bash@3
             displayName: Terraform Validate
@@ -89,6 +80,8 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 set -e
+                echo "Logging in to Azure..."
+                az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
                 az acr login -n $(ACR_NAME)
 
@@ -127,6 +120,10 @@ stages:
                     scriptLocation: inlineScript
                     inlineScript: |
                       set -e
+                      echo "Logging in to Azure..."
+                      az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+                      az account set --subscription $(ARM_SUBSCRIPTION_ID)
+
                       az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
                       
                       helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm

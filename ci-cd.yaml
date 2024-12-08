@@ -106,30 +106,29 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: AzureCLI@2
-                  displayName: Azure Login and AKS Deployment
-                  inputs:
-                    azureSubscription: '$(ARM_SERVICE_CONNECTION)'
-                    scriptType: bash
-                    scriptLocation: inlineScript
-                    inlineScript: |
-                      set -e
-                      echo "Logging in to Azure..."
-                      az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
-                      az account set --subscription $(ARM_SUBSCRIPTION_ID)
+              - task: AzureCLI@2
+                displayName: Azure Login and AKS Deployment
+                inputs:
+                  azureSubscription: '$(ARM_SERVICE_CONNECTION)'
+                  scriptType: bash
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    set -e
+                    echo "Logging in to Azure..."
+                    az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+                    az account set --subscription $(ARM_SUBSCRIPTION_ID)
 
-                      az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
-                      
-                      echo "Logging in to ACR..."
-                      az acr login --name bestrongacr45
-                      helm registry login bestrongacr45.azurecr.io \
-                        -u $(ARM_CLIENT_ID) \
-                        -p $(ARM_CLIENT_SECRET)
+                    echo "Configuring AKS credentials..."
+                    az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
 
-                      echo "Pulling Helm chart..."
-                      helm pull oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
+                    echo "Logging in to ACR..."
+                    az acr login --name $(ACR_NAME)
+                    helm registry login $(ACR_NAME).azurecr.io \
+                      -u $(ARM_CLIENT_ID) \
+                      -p $(ARM_CLIENT_SECRET)
 
-                      helm repo add bestrongacr45 oci://bestrongacr45.azurecr.io/helm/blue-green
+                    echo "Pulling Helm chart..."
+                    helm pull oci://$(ACR_NAME).azurecr.io/helm/blue-green --version 0.1.0 -d ./charts
 
-                      # helm upgrade --install my-release oci://bestrongacr45.azurecr.io/helm/blue-green/blue-green  --version 0.1.0
-                      helm install bestrongacr45/helm/blue-green oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
+                    echo "Installing Helm chart..."
+                    helm install $(RELEASE_NAME) ./charts/blue-green-0.1.0.tgz --namespace $(K8S_NAMESPACE) --create-namespace

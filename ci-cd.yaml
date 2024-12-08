@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - main
+      - '*'
 
 pr:
   branches:
@@ -9,196 +9,120 @@ pr:
       - main
 
 variables:
-  - group: AzureCredentials 
-
-# - stage: CI
-#   displayName: "CI:TF Init&Valid&Plan | HELM: Pack&Push "
-#   jobs:
-#   - job: terraform_ci
-#     displayName: "CI Job - Terraform Init, Validate, and Plan"
-#     pool:
-#       vmImage: 'ubuntu-latest'
-#     steps:
-#       - checkout: self
-
-#       - task: HelmInstaller@1
-#         displayName: Package and Push Helm Chart
-
-#           inputs:
-#             helmVersion: 'latest'
-
-#         - checkout: self
-
-#         - script: |
-#               helm package $(HELM_CHART_NAME)
-#               helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
-
-#       - task: Bash@3
-#         displayName: "Install Azure CLI"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-#             az --version
-
-#       - task: Bash@3
-#         displayName: "Install Terraform"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             T_VERSION="1.9.8"
-#             curl -O https://releases.hashicorp.com/terraform/${T_VERSION}/terraform_${T_VERSION}_linux_amd64.zip
-#             unzip terraform_${T_VERSION}_linux_amd64.zip
-#             sudo mv terraform /usr/local/bin/
-#             terraform -version
-
-#       - task: Bash@3
-#         displayName: "Azure Login"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
-#             az account set --subscription $(ARM_SUBSCRIPTION_ID)
-
-#       - task: Bash@3
-#         displayName: "Terraform Init"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             terraform init -lock=false
-
-#       - task: Bash@3
-#         displayName: "Terraform Validate"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             terraform validate -no-color
-
-#       - task: Bash@3
-#         displayName: "Terraform Plan"
-#         inputs:
-#           targetType: 'inline'
-#           script: |
-#             terraform plan -no-color -input=false -lock=false
-#         # env:
-#         #   TF_VAR_sql_admin_user: $(TF_VAR_sql_admin_user)
-#         #   TF_VAR_sql_admin_password: $(TF_VAR_sql_admin_password)
-
-# # Continuous Deployment (CD) Stage - Triggered only after CI success and requires manual approval
-# - stage: CD
-#   displayName: "CD: TF: Apply | HELM: Deploy"
-#   dependsOn: CI
-#   condition: succeeded() # Triggered only if CI succeeds
-#   jobs:
-#   - deployment: terraform_cd
-#     displayName: "CD Job - Terraform Apply"
-#     pool:
-#       vmImage: 'ubuntu-latest'
-#     environment:
-#           name: 'Production'  # Replace with your environment name
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#                 - checkout: self
-
-#                 - task: Bash@3
-#                   displayName: "Azure Login"
-#                   inputs:
-#                     targetType: 'inline'
-#                     script: |
-#                       az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
-#                       az account set --subscription $(ARM_SUBSCRIPTION_ID)
-                
-
-#                 # - task: Bash@3      
-#                 #   displayName: "Run Terraform Init, Validate, and Plan"
-#                 #   inputs:
-#                 #     targetType: 'inline'
-#                 #     script: |
-#                 #               terraform init  -lock=false
-#                 #               terraform validate
-#                 #               terraform plan -out=tfplan.out -lock=false
-#                 #   env:
-#                 #       TF_VAR_sql_admin_user: $(TF_VAR_sql_admin_user)
-#                 #       TF_VAR_sql_admin_password: $(TF_VAR_sql_admin_password)      
-
-
-
-#                 - task: Bash@3
-#                   displayName: "Terraform Apply"
-#                   inputs:
-#                     targetType: 'inline'
-#                     script: |
-#                       terraform apply  --auto-approve -lock=false tfplan.out
-#                   # env:
-#                   #   TF_VAR_sql_admin_user: $(TF_VAR_sql_admin_user)
-#                   #   TF_VAR_sql_admin_password: $(TF_VAR_sql_admin_password)
-
-
-#                 - task: AzureCLI@2
-#                   displayName: Deploy Helm Chart to AKS
-
-#                   inputs:
-#                     azureSubscription: '$(AZURE_SUBSCRIPTION)'
-#                     scriptType: bash
-#                     scriptLocation: inlineScript
-#                     inlineScript: |
-#                       # Authenticate to AKS
-#                       az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
-
-#                       # Add the ACR Helm repository
-#                       helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm
-#                       helm repo update
-
-#                       # Deploy the Helm chart
-#                       helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \
-#                         --version <version> \
-#                         --set ingress.host=$(DOMAIN)
-
-
-
-
+  - group: AllCredentials
 
 stages:
-  - stage: BuildHelmChart
-    displayName: Build and Push Helm Chart
+  - stage: Build
+    displayName: Build and Validate
     jobs:
-      - job: HelmPackage
-        displayName: Package and Push Helm Chart
+      - job: HelmPackageAndTerraformValidate
+        displayName: Helm Packaging and Terraform Validation
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: '1.9.8'
+
           - task: HelmInstaller@1
+            displayName: Install Helm
             inputs:
               helmVersion: 'latest'
 
-          - checkout: self
-
-          - script: |
-              helm package $(HELM_CHART_NAME)
-              helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
-            displayName: Package and Push Helm Chart
-
-  - stage: DeployToAKS
-    displayName: Deploy to AKS
-    dependsOn: BuildHelmChart
-    jobs:
-      - job: DeployHelm
-        displayName: Deploy Helm Chart to AKS
-        steps:
           - task: AzureCLI@2
+            displayName: Azure Login
             inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              azureSubscription: '$(ARM_SERVICE_CONNECTION)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                # Authenticate to AKS
-                az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
+                set -e
+                echo "Logging in to Azure..."
+                az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+                az account set --subscription $(ARM_SUBSCRIPTION_ID)
+                az account show
 
-                # Add the ACR Helm repository
-                helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm
-                helm repo update
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              
+          - task: Bash@3
+            displayName: Package Helm Chart
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -e
+                cd ./helm-charts
+                helm lint
+                helm package .
 
-                # Deploy the Helm chart
-                helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \
-                  --version <version> \
-                  --set ingress.host=$(DOMAIN)
+  - stage: BuildAndPush
+    displayName: Build and Push Artifacts
+    jobs:
+      - job: HelmChartAndContainerBuild
+        displayName: Build Helm Chart and Push to ACR
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: Azure Login
+            inputs:
+              azureSubscription: '$(ARM_SERVICE_CONNECTION)'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                echo "Logging in to Azure..."
+                az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+                az account set --subscription $(ARM_SUBSCRIPTION_ID)
+                az acr login -n $(ACR_NAME)
+
+          - task: Bash@3
+            displayName: Push Helm Chart to ACR
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -e
+                cd ./helm-charts
+                helm lint
+                helm package .
+                helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
+
+  - stage: DeployToProduction
+    displayName: Deploy to Production
+    dependsOn:
+      - Build
+      - BuildAndPush
+    condition: succeeded()
+    jobs:
+      - deployment: DeployToAKS
+        displayName: Deploy to AKS
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'Production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: Azure Login and AKS Deployment
+                  inputs:
+                    azureSubscription: '$(ARM_SERVICE_CONNECTION)'
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -e
+                      echo "Logging in to Azure..."
+                      az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+                      az account set --subscription $(ARM_SUBSCRIPTION_ID)
+
+                      az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
+                      
+                      helm repo add myrepo oci://$(ACR_NAME).azurecr.io/helm
+                      helm repo update
+                      
+                      helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \
+                        --version $(CHART_VERSION) \
+                        --set ingress.host=$(DOMAIN)

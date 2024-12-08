@@ -1,0 +1,28 @@
+{{- range .Values.deployments }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: {{ .labels.app }}
+      color: {{ .labels.color }}
+  template:
+    metadata:
+      labels:
+        app: {{ .labels.app }}
+        color: {{ .labels.color }}
+    spec:
+      containers:
+        - name: {{ .container.name }}
+          image: {{ .container.image }}
+          imagePullPolicy: {{ .container.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .container.port }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .container.environment }}
+{{- end }}

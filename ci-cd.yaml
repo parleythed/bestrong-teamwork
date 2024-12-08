@@ -128,7 +128,7 @@ stages:
                       -p $(ARM_CLIENT_SECRET)
 
                     echo "Pulling Helm chart..."
-                    helm pull oci://$(ACR_NAME).azurecr.io/helm/blue-green/blue-green --version 0.1.0 -d ./charts
+                    helm pull oci://$(ACR_NAME).azurecr.io/helm/blue-green --version 0.1.0 -d ./charts
 
                     echo "Installing Helm chart..."
                     helm install $(RELEASE_NAME) ./charts/blue-green-0.1.0.tgz --namespace $(K8S_NAMESPACE) --create-namespace

@@ -42,12 +42,11 @@ stages:
                 az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
                 az account show
-
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
               command: 'validate'
-              
+
           - task: Bash@3
             displayName: Package Helm Chart
             inputs:
@@ -57,7 +56,6 @@ stages:
                 cd ./helm-charts
                 helm lint
                 helm package .
-
   - stage: BuildAndPush
     displayName: Build and Push Artifacts
     jobs:
@@ -78,7 +76,6 @@ stages:
                 az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
                 az account set --subscription $(ARM_SUBSCRIPTION_ID)
                 az acr login -n $(ACR_NAME)
-
           - task: Bash@3
             displayName: Push Helm Chart to ACR
             inputs:
@@ -89,7 +86,6 @@ stages:
                 helm lint
                 helm package .
                 helm push $(HELM_CHART_NAME)-*.tgz oci://$(ACR_NAME).azurecr.io/helm
-
   - stage: DeployToProduction
     displayName: Deploy to Production
     dependsOn:
@@ -117,12 +113,20 @@ stages:
                       echo "Logging in to Azure..."
                       az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
                       az account set --subscription $(ARM_SUBSCRIPTION_ID)
-
                       az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_NAME)
                       
-                      helm pull oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
+                      # helm pull oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
                       # helm repo update
                       
                       # helm upgrade --install $(HELM_CHART_NAME) myrepo/$(HELM_CHART_NAME) \
                       #   --version $(CHART_VERSION) \
                       #   --set ingress.host=$(DOMAIN)
+                      echo "Logging in to ACR..."
+                      az acr login --name bestrongacr45
+                      helm registry login bestrongacr45.azurecr.io \
+                        -u $(ARM_CLIENT_ID) \
+                        -p $(ARM_CLIENT_SECRET)
+                      echo "Pulling Helm chart..."
+                      helm pull oci://bestrongacr45.azurecr.io/helm/blue-green --version 0.1.0
+                      # echo "Updating Helm repository..."
+                      # helm repo update

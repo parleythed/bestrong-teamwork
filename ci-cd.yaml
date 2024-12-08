@@ -95,8 +95,8 @@ stages:
   - stage: DeployToProduction
     displayName: Deploy to Production
     dependsOn: 
-      - BuildAndValidate
-      - BuildAndPushArtifacts
+      - Build
+      - BuildAndPush
     condition: succeeded()
     jobs:
       - deployment: DeployToAKS

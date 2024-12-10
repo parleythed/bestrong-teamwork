@@ -1,6 +1,6 @@
 service:
   name: bestrong-api-svc
-  namespace: bestrong-ingress
+  namespace: monitoring
   selector:
     app: blue-green-dep
     color: blue
@@ -12,26 +12,26 @@ service:
 
 ingress:
   name: default-ingress
-  namespace: bestrong-ingress
+  namespace: monitoring
   annotations:
     certManager: letsencrypt-prod
     proxySetHeaders: ingress-nginx-csp-headers
-    # nginx.ingress.kubernetes.io/rewrite-target: /swagger/index.html
-  ingressClassName: nginx
+  ingressClassName: public # never touch this again 
   tls:
-    host: bestrong-api.pp.ua
-    secretName: userapi-tls
+    host: bestandstrong.pp.ua
+    secretName: userapi-tls-monitoring
   rules:
-    host: bestrong-api.pp.ua
+    host: bestandstrong.pp.ua
     path: /
     pathType: Prefix
     service:
       name: bestrong-api-svc
       port: 80
 
-deployments:
+
+deploymentsBlue:
   - name: blue-dep
-    namespace: bestrong-ingress
+    namespace: monitoring
     replicas: 2
     labels:
       app: blue-green-dep
@@ -42,8 +42,10 @@ deployments:
       imagePullPolicy: Always
       port: 80
       environment: "Development"
+ 
+deploymentsGreen:
   - name: green-dep
-    namespace: bestrong-ingress
+    namespace: monitoring
     replicas: 2
     labels:
       app: blue-green-dep
@@ -57,23 +59,23 @@ deployments:
 
 clusterIssuer:
   name: letsencrypt-prod
-  namespace: bestrong-ingress
+  namespace: monitoring
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: stephansnigur@gmail.com
+    email: stefansnihur@gmail.com
     privateKeySecretName: letsencrypt-prod-issuer-key1
     solver:
-      ingressClass: public
+      ingressClass: public #(pay attention (nginx))
 
 certificate:
-  name: ingress-nginx-tls1
-  namespace: bestrong-ingress
-  secretName: userapi-tls
+  name: ingress-nginx-tls-monitoring
+  namespace: monitoring
+  secretName: userapi-tls-monitoring
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - bestrong-api.pp.ua
+    - bestandstrong.pp.ua
   usages:
     - digital signature
     - key encipherment
@@ -81,6 +83,6 @@ certificate:
 
 cspConfigMap:
   name: ingress-nginx-csp-headers
-  namespace: bestrong-ingress
+  namespace: monitoring
   data:
     ContentSecurityPolicy: "script-src 'self' 'unsafe-eval'; object-src 'none';"

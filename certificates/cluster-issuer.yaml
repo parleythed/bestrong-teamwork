@@ -6,10 +6,10 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: stephansnigur@gmail.com
+    email: stefansnihur@gmail.com
     privateKeySecretRef:
       name: letsencrypt-prod-issuer-key1
     solvers:
       - http01:
           ingress:
-            class: nginx
+            class: nginx #(pay attention)

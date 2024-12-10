@@ -1,8 +1,0 @@
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: ingress-nginx-csp-headers
-#   namespace: bestrong-ingress
-# data:
-#   Content-Security-Policy: "script-src 'self' 'unsafe-eval'; object-src 'none';"
-

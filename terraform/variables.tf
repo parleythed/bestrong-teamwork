@@ -1,21 +1,25 @@
 variable "rg_name" {
   description = "Resource group name"
   type        = string
+  default = "bestrong-aks"
 }
 
 variable "rg_location" {
   description = "Azure region for the resource group"
   type        = string
+  default = "Canada Central"
 }
 
 variable "vnet_name" {
   description = "Virtual network name"
   type        = string
+  default = "cluster-vnet"
 }
 
 variable "subnet_name" {
   description = "Subnet name"
   type        = string
+  default = "cluster-subnet"
 }
 
 variable "node_count" {
@@ -38,7 +42,7 @@ variable "ssh_key_name" {
 variable "storage_account_name" {
   description = "The name of the storage account"
   type        = string
-  default     = "bestrongaksstorage1"
+  default     = "bestrongsaapi"
 }
 
 variable "container_name" {

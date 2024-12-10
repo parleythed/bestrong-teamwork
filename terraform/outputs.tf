@@ -1,6 +1,6 @@
 output "aks_cluster_name" {
   description = "Name of the AKS cluster"
-  value       = module.aks.cluster_name
+  value       = module.aks.kubernetes_cluster_name
 }
 
 output "vnet_id" {

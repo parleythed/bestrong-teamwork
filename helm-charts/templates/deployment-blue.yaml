@@ -1,4 +1,4 @@
-{{- range .Values.deployments }}
+{{- range .Values.deploymentsBlue}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,3 +26,6 @@ spec:
             - name: ASPNETCORE_ENVIRONMENT
               value: {{ .container.environment }}
 {{- end }}
+
+
+

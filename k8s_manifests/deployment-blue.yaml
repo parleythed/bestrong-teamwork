@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blue-dep
-  namespace: bestrong-ingress
+  namespace: monitoring
 
 spec:
   replicas: 2

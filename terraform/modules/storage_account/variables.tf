@@ -13,7 +13,7 @@ variable "location" {
 variable "storage_account_name" {
   description = "The name of the storage account"
   type        = string
-  default     = "bestrongaksstorage1"
+  default     = "bestrongsaapi"
 }
 
 variable "container_name" {

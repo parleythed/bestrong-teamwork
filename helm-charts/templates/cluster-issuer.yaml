@@ -7,8 +7,8 @@ spec:
   acme:
     server: {{ .Values.clusterIssuer.acme.server }}
     email: {{ .Values.clusterIssuer.acme.email }}
-    privateKeySecretRef:
-      name: {{ .Values.clusterIssuer.acme.privateKeySecretRefName }}
+    privateKeySecretRef: 
+      name: letsencrypt-prod-issuer-key1
     solvers:
       - http01:
           ingress:

@@ -5,7 +5,6 @@ metadata:
   namespace: {{ .Values.ingress.namespace }}
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.ingress.annotations.certManager }}
-    nginx.ingress.kubernetes.io/proxy-set-headers: {{ .Values.ingress.annotations.proxySetHeaders }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   tls: 
@@ -20,6 +19,6 @@ spec:
             pathType: {{ .Values.ingress.rules.pathType }}
             backend:
               service:
-                name: {{ .Values.ingress.rules.serviceName }}
+                name: {{ .Values.ingress.rules.service.name }}
                 port:
                   number: {{ .Values.ingress.rules.service.port}}

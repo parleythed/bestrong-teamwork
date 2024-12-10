@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: default-ingress
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-set-headers: ingress-nginx-csp-headers  # Reference the CSP headers config map
+    
+spec:
+  ingressClassName: public # don`t touch this ever again 
+  tls:
+    - hosts: 
+      - bestandstrong.pp.ua
+      secretName: userapi-tls-monitoring
+  rules:
+  - host: bestandstrong.pp.ua
+    http: 
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bestrong-api-svc
+            port:
+              number: 80
+
+
+  # - host: bestrong-api.pp.ua
+  #   http: 
+  #     paths:
+  #     - path: /grafana
+  #       pathType: Prefix
+  #       monitoring:
+  #         service:
+  #           name: bestrong-monitoring-svs
+  #           port:
+  #             number: 80    
+
+
+  # - host: bestrong-api.pp.ua
+  #   http: 
+  #     paths:
+  #     - path: /prometheus
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: bestrong-prometheus-svc
+  #           port:
+  #             number: 80        
+
+
+  #   - host: bestrong-api.pp.ua
+  #   http: 
+  #     paths:
+  #     - path: /opencost
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: bestrong-opencost-svc
+  #           port:
+  #             number: 80     
+
+
+

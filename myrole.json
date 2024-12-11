@@ -1,0 +1,21 @@
+{
+    "Name": "OpenCost Azure Read Role",
+    "Id": null,
+    "IsCustom": true,
+    "Description": "Allows reading Azure resource information for OpenCost",
+    "Actions": [
+        "Microsoft.Compute/virtualMachines/read",
+        "Microsoft.Compute/disks/read",
+        "Microsoft.Resources/subscriptions/read",
+        "Microsoft.Resources/subscriptions/resourceGroups/read",
+        "Microsoft.ContainerService/managedClusters/read",
+        "Microsoft.Network/networkInterfaces/read",
+        "Microsoft.Pricing/pricesheets/read"
+    ],
+    "NotActions": [],
+    "DataActions": [],
+    "NotDataActions": [],
+    "AssignableScopes": [
+        "/subscriptions/da6d7857-225c-428c-a979-648fac39f683"
+    ]
+}

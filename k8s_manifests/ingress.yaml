@@ -12,9 +12,15 @@ spec:
   tls:
     - hosts: 
       - bestandstrong.pp.ua
+      - graf.bestandstrong.pp.ua
+      - prom.bestandstrong.pp.ua
+      - opencost.bestandstrong.pp.ua
       secretName: userapi-tls-monitoring
+
+
+
   rules:
-  - host: bestandstrong.pp.ua
+  - host: bestandstrong.pp.ua     #Our main app Swagger
     http: 
       paths:
       - path: /
@@ -26,40 +32,40 @@ spec:
               number: 80
 
 
-  # - host: bestrong-api.pp.ua
-  #   http: 
-  #     paths:
-  #     - path: /grafana
-  #       pathType: Prefix
-  #       monitoring:
-  #         service:
-  #           name: bestrong-monitoring-svs
-  #           port:
-  #             number: 80    
+  - host: graf.bestandstrong.pp.ua  #Our Grafana
+    http: 
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-grafana 
+            port:
+              number: 80    
 
 
-  # - host: bestrong-api.pp.ua
+  - host: prom.bestandstrong.pp.ua  #Our Prometheus 
+    http: 
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-kube-prometheus-prometheus
+            port:
+              number: 9090        
+
+
+  # - host: opencost.bestandstrong.pp.ua  #Our OpenCost
   #   http: 
   #     paths:
-  #     - path: /prometheus
+  #     - path: /
   #       pathType: Prefix
   #       backend:
   #         service:
-  #           name: bestrong-prometheus-svc
+  #           name: prometheus-kube-prometheus-prometheus
   #           port:
-  #             number: 80        
-
-
-  #   - host: bestrong-api.pp.ua
-  #   http: 
-  #     paths:
-  #     - path: /opencost
-  #       pathType: Prefix
-  #       backend:
-  #         service:
-  #           name: bestrong-opencost-svc
-  #           port:
-  #             number: 80     
+  #             number: 9090   
 
 
 

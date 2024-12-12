@@ -7,34 +7,32 @@ metadata:
     release: prometheus
 spec:
   groups:
-    - name: alertmanager.rules
+    - name: kubernetes-resources
       rules:
-        # High CPU Usage Alert
-        # - alert: HighCPUUsage
-        #   expr: |
-        #     (sum(rate(container_cpu_usage_seconds_total{pod=~"bestong.*"}[5m])) by (pod) /
-        #     sum(container_spec_cpu_quota{pod=~"bestong.*"} / 100000) by (pod)) * 100 > 70
-        #   for: 5m
-        #   labels:
-        #     severity: warning
-        #     service: bestrong-api-svc
-        #   annotations:
-        #     summary: "High CPU usage detected on {{ $labels.pod }}"
-        #     description: |
-        #       CPU usage for pod {{ $labels.pod }} has exceeded 70% for more than 5 minutes. 
-        #       Current value: {{ $value }}%
 
-        # High Memory Usage Alert
-        - alert: HighMemoryUsage-Custom
+      
+        # High CPU Usage Alert
+        - alert: BeStrongAPIHighCPUUsage
           expr: |
-            (sum(container_memory_usage_bytes{pod=~"bestong.*"}) by (pod) /
-            sum(container_spec_memory_limit_bytes{pod=~"bestong.*"}) by (pod)) * 100 > 70
-          for: 1m
+            (100 * sum(irate(container_cpu_usage_seconds_total{pod=~"blue-dep.*"}[2m]))) > 70
+          for: 2m
           labels:
             severity: warning
-            service: bestrong-api-svc
           annotations:
-            summary: "High Memory usage detected on {{ $labels.pod }}"
-            description: |
-              Memory usage for pod {{ $labels.pod }} has exceeded 70% for more than 5 minutes. 
-              Current value: {{ $value }}%
+            summary: "High CPU usage detected for BeStrong API"
+            description: "The BeStrong API is using more than 70% of the allocated CPU for more than 2 minutes. Pod: {{ $labels.pod }}, Node: {{ $labels.node }}."
+            
+
+        # High Memory Usage Alert
+
+        - alert: BeStrongAPIHighMemoryUsage
+          expr: |
+              (100 * sum(container_memory_working_set_bytes{pod=~"blue-dep.*"}) / sum(machine_memory_bytes)) > 70
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage detected for BeStrong API"
+            description: "The BeStrong API is using more than 70% of the allocated memory for more than 2 minutes. Pod: {{ $labels.pod }}, Node: {{ $labels.node }}."
+
+      #idea №x: Check grafana logs and try to write them inside the expression. graphic`s color: yellow

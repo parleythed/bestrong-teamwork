@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metrics-config
+  namespace: monitoring
+data:
+  prometheus-metrics-url: "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+  scrape-interval: "60s"

@@ -5,55 +5,51 @@ metadata:
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/proxy-set-headers: ingress-nginx-csp-headers  # Reference the CSP headers config map
-    
+    nginx.ingress.kubernetes.io/proxy-set-headers: ingress-nginx-csp-headers # Reference the CSP headers config map
+
 spec:
-  ingressClassName: public # don`t touch this ever again 
+  ingressClassName: public # don`t touch this ever again
   tls:
-    - hosts: 
-      - bestandstrong.pp.ua
-      - graf.bestandstrong.pp.ua
-      - prom.bestandstrong.pp.ua
-      - opencost.bestandstrong.pp.ua
+    - hosts:
+        - bestandstrong.pp.ua
+        - graf.bestandstrong.pp.ua
+        - prom.bestandstrong.pp.ua
+        - opencost.bestandstrong.pp.ua
       secretName: userapi-tls-monitoring
 
-
-
   rules:
-  - host: bestandstrong.pp.ua     #Our main app Swagger
-    http: 
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: bestrong-api-svc
-            port:
-              number: 80
+    - host: bestandstrong.pp.ua #Our main app Swagger
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bestrong-api-svc
+                port:
+                  number: 80
 
+    - host: graf.bestandstrong.pp.ua #Our Grafana
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-grafana
+                port:
+                  number: 80
 
-  - host: graf.bestandstrong.pp.ua  #Our Grafana
-    http: 
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: prometheus-grafana 
-            port:
-              number: 80    
-
-
-  - host: prom.bestandstrong.pp.ua  #Our Prometheus 
-    http: 
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: prometheus-kube-prometheus-prometheus
-            port:
-              number: 9090        
+    - host: prom.bestandstrong.pp.ua #Our Prometheus
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-kube-prometheus-prometheus
+                port:
+                  number: 9090
 
 
   - host: opencost.bestandstrong.pp.ua  #Our OpenCost

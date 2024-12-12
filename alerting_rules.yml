@@ -1,0 +1,32 @@
+groups:
+  - name: BeStrong-API-Alerts
+    rules:
+      # High CPU Usage Alert
+      - alert: HighCPUUsage
+        expr: |
+          (sum(rate(container_cpu_usage_seconds_total{pod=~"bestong.*"}[5m])) by (pod) /
+          sum(container_spec_cpu_quota{pod=~"bestong.*"} / 100000) by (pod)) * 100 > 70
+        for: 5m
+        labels:
+          severity: warning
+          service: BeStrongAPI
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.pod }}"
+          description: |
+            CPU usage for pod {{ $labels.pod }} has exceeded 70% for more than 5 minutes. 
+            Current value: {{ $value }}%
+
+      # High Memory Usage Alert
+      - alert: HighMemoryUsage
+        expr: |
+          (sum(container_memory_usage_bytes{pod=~"bestong.*"}) by (pod) /
+          sum(container_spec_memory_limit_bytes{pod=~"bestong.*"}) by (pod)) * 100 > 70
+        for: 5m
+        labels:
+          severity: warning
+          service: BeStrongAPI
+        annotations:
+          summary: "High Memory usage detected on {{ $labels.pod }}"
+          description: |
+            Memory usage for pod {{ $labels.pod }} has exceeded 70% for more than 5 minutes. 
+            Current value: {{ $value }}%

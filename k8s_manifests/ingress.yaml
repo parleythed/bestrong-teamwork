@@ -63,7 +63,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: prometheus-kube-prometheus-prometheus
+            name: opencost
             port:
               number: 9091   
 

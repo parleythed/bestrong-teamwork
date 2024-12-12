@@ -1,0 +1,38 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: kubernetes-resources
+      rules:
+
+      
+        # High CPU Usage Alert
+        - alert: BeStrongAPIHighCPUUsage
+          expr: |
+            (100 * avg(irate(container_cpu_usage_seconds_total{pod=~"blue-dep.*"}[2m]))) > 70
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage detected for BeStrong API"
+            description: "The BeStrong API is using more than 70% of the allocated CPU for more than 2 minutes. Pod: {{ $labels.pod }}, Node: {{ $labels.node }}."
+            
+
+        # High Memory Usage Alert
+
+        - alert: BeStrongAPIHighMemoryUsage
+          expr: |
+              (100 * sum(container_memory_working_set_bytes{pod=~"blue-dep.*"}) / sum(machine_memory_bytes)) > 70
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage detected for BeStrong API"
+            description: "The BeStrong API is using more than 70% of the allocated memory for more than 2 minutes. Pod: {{ $labels.pod }}, Node: {{ $labels.node }}."
+
+      #idea №x: Check grafana logs and try to write them inside the expression. graphic`s color: yellow

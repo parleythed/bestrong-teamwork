@@ -11,6 +11,7 @@ using SampleWebApiAspNetCore.MappingProfiles;
 using SampleWebApiAspNetCore.Repositories;
 using SampleWebApiAspNetCore.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,4 +90,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMetricServer();  // This adds the /metrics endpoint automatically
+app.UseHttpMetrics();
 app.Run();

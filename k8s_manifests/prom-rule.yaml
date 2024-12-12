@@ -14,7 +14,7 @@ spec:
         # High CPU Usage Alert
         - alert: BeStrongAPIHighCPUUsage
           expr: |
-            (100 * sum(irate(container_cpu_usage_seconds_total{pod=~"blue-dep.*"}[2m]))) > 70
+            (100 * avg(irate(container_cpu_usage_seconds_total{pod=~"blue-dep.*"}[2m]))) > 70
           for: 2m
           labels:
             severity: warning

@@ -56,15 +56,15 @@ stages:
               script: |
                 terraform apply  --auto-approve -lock=false tfplan.out
 
-          - task: Bash@3
-            displayName: Package Helm Chart
-            inputs:
-              targetType: 'inline'
-              script: |
-                set -e
-                cd ./helm-charts
-                helm lint
-                helm package .
+          # - task: Bash@3
+          #   displayName: Package Helm Chart
+          #   inputs:
+          #     targetType: 'inline'
+          #     script: |
+          #       set -e
+          #       cd ./helm-charts
+          #       helm lint
+          #       helm package .
 
   # - stage: BuildAndPush
   #   displayName: Build and Push Artifacts

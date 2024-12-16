@@ -54,7 +54,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                terraform apply  --auto-approve -lock=false tfplan.out
+                terraform apply
 
           # - task: Bash@3
           #   displayName: Package Helm Chart

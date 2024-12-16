@@ -49,12 +49,11 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'validate'
-          - task: Bash@3
-            displayName: "Terraform Apply"
+
+          - task: TerraformTaskV4@4
             inputs:
-              targetType: 'inline'
-              script: |
-                terraform apply
+              provider: 'azurerm'
+              command: 'apply'
 
           # - task: Bash@3
           #   displayName: Package Helm Chart

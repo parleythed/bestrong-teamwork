@@ -50,12 +50,14 @@ stages:
               provider: 'azurerm'
               command: 'validate'
               environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
+              workingDirectory: './terraform'
 
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
+              workingDirectory: './terraform'
 
 
           # - task: Bash@3

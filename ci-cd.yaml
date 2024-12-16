@@ -48,6 +48,18 @@ stages:
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
+              command: 'init'
+              environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
+              workingDirectory: './terraform'
+              backendServiceArm: 'bestrongserv'
+              backendAzureRmResourceGroupName: 'bestrong-aks'
+              backendAzureRmStorageAccountName: 'bestrongsaapi'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'terraform.tfstate'
+
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
               command: 'validate'
               environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
               workingDirectory: './terraform'

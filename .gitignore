@@ -213,3 +213,6 @@ ModelManifest.xml
 
 # *terraform
 # terraform/*
+
+cloud-integration.json
+service-key.json

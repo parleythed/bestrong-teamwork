@@ -49,11 +49,14 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'validate'
+              environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
 
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
               command: 'apply'
+              environmentServiceNameAzureRM: '$(ARM_SERVICE_CONNECTION)'
+
 
           # - task: Bash@3
           #   displayName: Package Helm Chart

@@ -1,0 +1,20 @@
+grafana.ini:
+  smtp:
+    enabled: true
+    host: smtp.gmail.com:587
+    user: grafana@gmail.com
+    password: koacpvuakchjehyh
+    from_address: grafana@gmail.com
+    from_name: Grafana
+    ehlo_identity: localhost
+
+
+    # [smtp]                                                                                                                                                                                                            
+    # enabled = true                                                                                                                                                                                                    
+    # host = smtp.gmail.com:587                                                                                                                                                                                         
+    # user = stefansnihur@gmail.com                                                                                                                                                                                     
+    # password = koacpvuakchjehyh                                                                                                                                                                                       
+    # from_address = grafana@gmail.com                                                                                                                                                                                  
+    # from_name = Grafana                                                                                                                                                                                               
+    # ehlo_identity = localhost 
+    # paste into prom-graph config map and reload the same deployments  (working solution is commented)

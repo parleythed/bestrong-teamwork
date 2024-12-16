@@ -19,7 +19,6 @@ variable "node_count" {
 variable "username" {
   type        = string
   description = "The admin username for the new cluster."
-  default     = "azureadmin"
 }
 
 variable "ssh_key_name" {

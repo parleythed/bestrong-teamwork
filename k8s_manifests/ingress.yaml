@@ -52,16 +52,17 @@ spec:
                   number: 9090
 
 
-  - host: opencost.bestandstrong.pp.ua  #Our OpenCost
-    http: 
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: opencost
-            port:
-              number: 9091   
+    - host: opencost.bestandstrong.pp.ua  #Our OpenCost
+      http: 
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: opencost
+              port:
+                number: 90
+                  
 
 
 

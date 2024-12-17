@@ -1,3 +1,8 @@
+#!/bin/bash
+
+set -e
+
+
 # Define public Kubernetes chart repository in the Helm configuration
 echo "Adding a Helm repository for Prometheus-Grafana"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts

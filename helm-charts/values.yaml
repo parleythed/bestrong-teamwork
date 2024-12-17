@@ -61,7 +61,7 @@ clusterIssuer:
     email: stefansnihur@gmail.com
     privateKeySecretName: letsencrypt-prod-issuer-key1
     solver:
-      ingressClass: public #(pay attention (nginx))
+      ingressClass: nginx #(pay attention (nginx))
 
 certificate:
   name: ingress-nginx-tls-monitoring

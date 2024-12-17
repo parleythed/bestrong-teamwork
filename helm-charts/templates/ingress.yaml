@@ -5,20 +5,28 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.ingress.annotations.certManager }}
+    nginx.ingress.kubernetes.io/proxy-set-headers: {{ .Values.ingress.annotations.proxySetHeaders }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
-  tls: 
-    - hosts: 
-        - {{ .Values.ingress.tls.host }}
-      secretName: {{ .Values.ingress.tls.secretName }}    
+  tls:
+    - hosts:
+        {{- range .Values.ingress.tls.hosts }}
+        - {{ . }}
+        {{- end }}
+      secretName: {{ .Values.ingress.tls.secretName }}
   rules:
-    - host: {{ .Values.ingress.rules.host }}
+    {{- range .Values.ingress.rules }}
+    - host: {{ .host }}
       http:
         paths:
-          - path: {{ .Values.ingress.rules.path }}
-            pathType: {{ .Values.ingress.rules.pathType }}
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .Values.ingress.rules.service.name }}
+                name: {{ .service.name }}
                 port:
-                  number: {{ .Values.ingress.rules.service.port}}
+                  number: {{ .service.port }}
+          {{- end }}
+    {{- end }}
+

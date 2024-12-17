@@ -18,15 +18,41 @@ ingress:
     proxySetHeaders: ingress-nginx-csp-headers
   ingressClassName: public # never touch this again
   tls:
-    host: bestandstrong.pp.ua
+    hosts:
+      - bestandstrong.pp.ua
+      - graf.bestandstrong.pp.ua
+      - prom.bestandstrong.pp.ua
+      # - opencost.bestandstrong.pp.ua
     secretName: userapi-tls-monitoring
   rules:
-    host: bestandstrong.pp.ua
-    path: /
-    pathType: Prefix
-    service:
-      name: bestrong-api-svc
-      port: 80
+    - host: bestandstrong.pp.ua
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: bestrong-api-svc
+            port: 80
+    - host: graf.bestandstrong.pp.ua
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: prometheus-grafana
+            port: 80
+    - host: prom.bestandstrong.pp.ua
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: prometheus-kube-prometheus-prometheus
+            port: 9090
+    # - host: opencost.bestandstrong.pp.ua
+    #   paths:
+    #     - path: /
+    #       pathType: Prefix
+    #       service:
+    #         name: opencost
+    #         port: 90
 
 deploymentsBlue:
   - name: blue-dep

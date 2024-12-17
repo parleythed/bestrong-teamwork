@@ -1,6 +1,7 @@
+namespace: bestrong-api
+
 service:
   name: bestrong-api-svc
-  namespace: monitoring
   selector:
     app: blue-green-dep
     color: blue
@@ -12,11 +13,10 @@ service:
 
 ingress:
   name: default-ingress
-  namespace: monitoring
   annotations:
     certManager: letsencrypt-prod
     proxySetHeaders: ingress-nginx-csp-headers
-  ingressClassName: public # never touch this again 
+  ingressClassName: public # never touch this again
   tls:
     host: bestandstrong.pp.ua
     secretName: userapi-tls-monitoring
@@ -28,10 +28,8 @@ ingress:
       name: bestrong-api-svc
       port: 80
 
-
 deploymentsBlue:
   - name: blue-dep
-    namespace: monitoring
     replicas: 2
     labels:
       app: blue-green-dep
@@ -42,10 +40,9 @@ deploymentsBlue:
       imagePullPolicy: Always
       port: 80
       environment: "Development"
- 
+
 deploymentsGreen:
   - name: green-dep
-    namespace: monitoring
     replicas: 2
     labels:
       app: blue-green-dep
@@ -59,7 +56,6 @@ deploymentsGreen:
 
 clusterIssuer:
   name: letsencrypt-prod
-  namespace: monitoring
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: stefansnihur@gmail.com
@@ -69,7 +65,6 @@ clusterIssuer:
 
 certificate:
   name: ingress-nginx-tls-monitoring
-  namespace: monitoring
   secretName: userapi-tls-monitoring
   issuerRef:
     name: letsencrypt-prod
@@ -81,8 +76,6 @@ certificate:
     - key encipherment
     - server auth
 
-cspConfigMap:
+csp:
   name: ingress-nginx-csp-headers
-  namespace: monitoring
-  data:
-    ContentSecurityPolicy: "script-src 'self' 'unsafe-eval'; object-src 'none';"
+  policy: "script-src 'self' 'unsafe-eval'; object-src 'none';"

@@ -2,13 +2,14 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: {{ .Values.clusterIssuer.name }}
-  namespace: {{ .Values.clusterIssuer.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
   acme:
     server: {{ .Values.clusterIssuer.acme.server }}
     email: {{ .Values.clusterIssuer.acme.email }}
     privateKeySecretRef: 
       name: letsencrypt-prod-issuer-key1
+      # name: {{ .Values.clusterIssuer.acme.privateKeySecretRef }}
     solvers:
       - http01:
           ingress:

@@ -1,5 +1,5 @@
 {
-    "Name": "OpenCostRole",
+    "Name": "OpenCostRole1",
     "IsCustom": true,
     "Description": "Allows reading Azure resource information for OpenCost",
     "Actions": [

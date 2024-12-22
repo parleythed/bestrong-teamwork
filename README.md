@@ -600,6 +600,9 @@ kubectl get secret -n monitoring prometheus-grafana -o=jsonpath='{.data.admin-pa
 ### Resources in pending and alerting state:
 ![Resources in pending and alerting state](/screenshots/active-resources.png)
 
+### Also we connected Prometheus to Grafana and made the E-mail alert when CPU's usage is 70% abd higher.
+![Alert CPU usage 70%](/screenshots/alert_from_graf.png)
+
 ## 3) Make Grafana accessible from the Internet
 ### We made grafana accessible over the internet by using subdomain “graf”. We also requested a certificate so HTTPS is enabled
 ![ Make Grafana accessible from the Internet](/screenshots/grafana-overview.png)
@@ -793,3 +796,7 @@ inputs: |
           Port 3100
           Retry_Limit False
 ```
+
+## 2) Make the logs from FluentBit available in Grafana.
+
+![FluentBit logs in Grafana](/screenshots/fluentbit_graf.png)

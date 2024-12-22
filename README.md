@@ -600,7 +600,7 @@ kubectl get secret -n monitoring prometheus-grafana -o=jsonpath='{.data.admin-pa
 ### Resources in pending and alerting state:
 ![Resources in pending and alerting state](/screenshots/active-resources.png)
 
-### Also we connected Prometheus to Grafana and made the E-mail alert when CPU's usage is 70% abd higher.
+### Also we connected Prometheus to Grafana and made the E-mail alert when CPU's usage is 70% and higher.
 ![Alert CPU usage 70%](/screenshots/alert_from_graf.png)
 
 ## 3) Make Grafana accessible from the Internet

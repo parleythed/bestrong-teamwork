@@ -24,7 +24,7 @@ ingress:
     hosts:
       - bestandstrong.pp.ua
       - graf.bestandstrong.pp.ua
-      - prom.bestandstrong.pp.ua
+      # - prom.bestandstrong.pp.ua
       - opencost.bestandstrong.pp.ua
     secretName: userapi-tls-monitoring
   rules:
@@ -42,13 +42,13 @@ ingress:
           service:
             name: prometheus-grafana
             port: 80
-    - host: prom.bestandstrong.pp.ua
-      paths:
-        - path: /
-          pathType: Prefix
-          service:
-            name: prometheus-kube-prometheus-prometheus
-            port: 9090
+    # - host: prom.bestandstrong.pp.ua
+    #   paths:
+    #     - path: /
+    #       pathType: Prefix
+    #       service:
+    #         name: prometheus-kube-prometheus-prometheus
+    #         port: 9090
     - host: opencost.bestandstrong.pp.ua
       paths:
         - path: /
@@ -56,13 +56,6 @@ ingress:
           service:
             name: opencost
             port: 9090
-    # - host: fluent.bestandstrong.pp.ua
-    #   paths:
-    #     - path: /
-    #       pathType: Prefix
-    #       service:
-    #         name: fluent-bit
-    #         port: 2020
 
 deploymentsBlue:
   - name: blue-dep

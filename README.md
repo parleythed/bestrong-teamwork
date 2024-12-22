@@ -709,7 +709,7 @@ helm install prometheus --repo https://prometheus-community.github.io/helm-chart
 ```
 
 # Task №3 Report
-## 1) Setup and configure FluentBit to collect "BeStrong" API logs.
+##  Setup and configure FluentBit to collect "BeStrong" API logs.
 ### Fluent Bit is an open source telemetry agent specifically designed to efficiently handle the challenges of collecting and processing telemetry data across a wide range of environments, from constrained systems to complex cloud infrastructures. Managing telemetry data from various sources and formats can be a constant challenge, particularly when performance is a critical factor.
 
 ### Rather than serving as a drop-in replacement, Fluent Bit enhances the observability strategy for your infrastructure by adapting and optimizing your existing logging layer, and adding metrics and traces processing. Fluent Bit supports a vendor-neutral approach, seamlessly integrating with other ecosystems such as Prometheus and OpenTelemetry. Trusted by major cloud providers, banks, and companies in need of a ready-to-use telemetry agent solution, Fluent Bit effectively manages diverse data sources and formats while maintaining optimal performance and keeping resource consumption low.
@@ -793,5 +793,3 @@ inputs: |
           Port 3100
           Retry_Limit False
 ```
-
-## 2) Make the logs from FluentBit available in Grafana.

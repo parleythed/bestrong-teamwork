@@ -12,8 +12,8 @@
 | 4    | Helm & Helm Charts | A package manager for Kubernetes that uses Charts to simplify the deployment of complex applications. |
 | 5    | Bash Scripts | Scripts written to automate tasks and execute commands in Linux/Unix environments. |
 
-### The diagram of the system, which was configured(for this tasks).
-![Diagram of the system](/diagrams/bestorng-architecture.jpeg)
+### The diagram of the Architecture of the BestrongAPI application in the cloud based on Kubernetes.
+![Diagram of the architecture](/diagrams/bestorng-architecture.jpeg)
 
 # Task №1 report
 
@@ -708,3 +708,90 @@ helm install prometheus --repo https://prometheus-community.github.io/helm-chart
 }
 ```
 
+# Task №3 Report
+## 1) Setup and configure FluentBit to collect "BeStrong" API logs.
+### Fluent Bit is an open source telemetry agent specifically designed to efficiently handle the challenges of collecting and processing telemetry data across a wide range of environments, from constrained systems to complex cloud infrastructures. Managing telemetry data from various sources and formats can be a constant challenge, particularly when performance is a critical factor.
+
+### Rather than serving as a drop-in replacement, Fluent Bit enhances the observability strategy for your infrastructure by adapting and optimizing your existing logging layer, and adding metrics and traces processing. Fluent Bit supports a vendor-neutral approach, seamlessly integrating with other ecosystems such as Prometheus and OpenTelemetry. Trusted by major cloud providers, banks, and companies in need of a ready-to-use telemetry agent solution, Fluent Bit effectively manages diverse data sources and formats while maintaining optimal performance and keeping resource consumption low.
+
+### Fluent Bit can be deployed as an edge agent for localized telemetry data handling or utilized as a central aggregator/collector for managing telemetry data across multiple sources and environments.
+
+```
+#!/bin/bash
+
+set -e
+
+
+# Define public Kubernetes chart repository in the Helm configuration
+echo "Adding a Helm repository for FluentBit and Loki"
+
+helm helm repo add fluent https://fluent.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+# Update local repositories
+helm repo update
+
+# Create a namespace for FluentBit and Loki 
+# kubectl create ns bestrong-api  # (already exists)
+
+# Install resources using HELM
+helm helm upgrade --install fluent-bit fluent/fluent-bit -n bestrong-api
+helm upgrade --install loki grafana/loki-stack -n bestrong-api
+
+echo "FluentBit and Loki have been successfully installed!"
+```
+
+```
+inputs: |
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        multiline.parser docker, cri
+        Tag kube.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+        Refresh_Interval 5
+
+    [INPUT]
+        Name tail
+        Path /var/log/pods/*.log
+        Tag pod.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+        Refresh_Interval 5
+
+    [INPUT]
+        Name tail
+        Path /var/log/kube-apiserver/*.log
+        Tag kube-apiserver.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+        Refresh_Interval 5
+
+  ## https://docs.fluentbit.io/manual/pipeline/filters
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match *
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude Off
+
+  ## https://docs.fluentbit.io/manual/pipeline/outputs
+  outputs: |
+      [OUTPUT]
+          Name loki
+          Match kube.*
+          Host loki
+          Port 3100
+          Retry_Limit False
+
+      [OUTPUT]
+          Name loki
+          Match host.*
+          Host loki
+          Port 3100
+          Retry_Limit False
+```
+
+## 2) Make the logs from FluentBit available in Grafana.

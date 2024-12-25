@@ -216,3 +216,4 @@ ModelManifest.xml
 
 cloud-integration.json
 service-key.json
+connect_to_aks.sh
